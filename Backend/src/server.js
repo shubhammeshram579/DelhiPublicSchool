@@ -14,9 +14,37 @@ app.use(cors());
 app.use(express.json());
 
 mongoose
-  .connect(process.env.MONGO_URI)
+  .connect(process.env.MONGO_URI_CLOUD)
   .then(() => console.log("MongoDB connected"))
   .catch((err) => console.log(err));
+
+  const connectDB = async () => {
+  let retries = 5;
+
+  while (retries) {
+    try {
+      await mongoose.connect(process.env.MONGO_URI_CLOUD, {
+        useNewUrlParser: true,
+        useUnifiedTopology: true,
+      });
+      console.log('✅ MongoDB connected successfully');
+      break;
+    } catch (error) {
+      console.error('❌ MongoDB connection failed:', error.message);
+      retries -= 1;
+      console.log(`🔄 Retrying in 5 seconds... (${retries} attempts left)`);
+      await new Promise((res) => setTimeout(res, 5000));
+    }
+  }
+
+  if (!retries) {
+    console.error('🚫 Failed to connect to MongoDB after all retries.');
+    process.exit(1);
+  }
+};
+
+connectDB()
+
 
 app.use("/api", otpRoutes);
 app.use("/api", members);
