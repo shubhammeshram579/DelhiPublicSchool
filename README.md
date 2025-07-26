@@ -1,12 +1,67 @@
-# React + Vite
+# 🧾 Registration & Payment System – MERN Stack
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A fully functional MERN-based Registration and Payment System featuring OTP verification, role-based dynamic form rendering, total calculation, and MongoDB integration with robust deployment support.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🔗 Live Demo
 
-## Expanding the ESLint configuration
+👉 [Click here to view the deployed project](https://delhi-public-school-frontend.vercel.app/)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+---
+
+## 📌 Features
+
+- 🔐 OTP Generation & Verification with Resend Timer
+- 👨‍👩‍👦 Role Selection (Student, Parent, Guardian)
+- 📝 Dynamic Form Handling Based on Role
+- 💳 Payment Calculation Summary
+- 💾 Data Storage in MongoDB
+- ⚙️ Retry-based MongoDB Connection Logic
+- 🎨 Tailwind CSS-Based Responsive UI
+- 🚀 Frontend-Backend Integration via Axios
+- 🌐 Deployed on Vercel (Frontend) & Render/Local (Backend)
+
+---
+
+## 🧰 Tech Stack
+
+| Area       | Technology        |
+|------------|-------------------|
+| Frontend   | React.js, Tailwind CSS |
+| Backend    | Express.js, Node.js     |
+| Database   | MongoDB (via Mongoose) |
+| API Calls  | Axios              |
+| Deployment | Vercel (Client), Render/Localhost (Server) |
+
+---
+
+---
+
+## ⚙️ How to Run Locally
+
+### 1. Clone the repository
+```bash
+- https://github.com/shubhammeshram579/DelhiPublicSchool.git
+
+
+## 🧾 Task Summary
+- Developed a MERN-based OTP verification and role-specific registration system.
+
+- Enabled dynamic form rendering for student/parent details.
+
+- Implemented total amount calculation logic.
+
+- Integrated MongoDB with retry-based deployment safety.
+
+ - Deployed frontend to Vercel with functional user flow.
+
+## ✅ Completion Statement
+-Successfully completed a full-stack Registration + OTP + Payment app using MERN stack. It includes authentication logic, dynamic forms, persistent storage, responsive design, and is fully deployed with production-ready code.
+
+## 📜 License
+- MIT – Open to personal and commercial use.
+
+## 👨‍💻 Developed By
+-Shubham Meshram
+- Feel free to fork, contribute, or give feedback!
