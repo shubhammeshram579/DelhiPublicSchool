@@ -28,7 +28,7 @@ const OTPLogin = () => {
     }
     setError("");
     try {
-      const res = await axios.post("http://localhost:3000/api/send-otp", {
+      const res = await axios.post("https://delhi-public-school-backend.vercel.app/api/send-otp", {
         mobile,
       });
       if (res.data.success) {
@@ -56,7 +56,7 @@ const OTPLogin = () => {
     }
     setError("");
     try {
-      const res = await axios.post("http://localhost:3000/api/verify-otp", {
+      const res = await axios.post("https://delhi-public-school-backend.vercel.app/api/verify-otp", {
         mobile,
         otp,
       });

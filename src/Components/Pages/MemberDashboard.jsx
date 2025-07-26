@@ -13,8 +13,8 @@ const MemberDashboard = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/members`);
-        const res2 = await axios.get(`http://localhost:3000/api/people`);
+        const res = await axios.get(`https://delhi-public-school-backend.vercel.app/api/members`);
+        const res2 = await axios.get(`https://delhi-public-school-backend.vercel.app/api/people`);
         setMembers([...res.data,...res2.data]);
       } catch (err) {
         console.error("Error fetching members", err);
