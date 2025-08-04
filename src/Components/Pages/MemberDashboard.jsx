@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
-import { format } from "date-fns";
 
 const maskAadhar = (aadhar) => aadhar.replace(/\d(?=\d{4})/g, "X");
 
@@ -9,20 +8,29 @@ const MemberDashboard = () => {
   const navigate = useNavigate();
   const [members, setMembers] = useState([]);
   const mobile = localStorage.getItem("mobile") || "9345235033"; // Fallback
+  const [token, setToken] = useState("");
 
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await axios.get(`https://delhi-public-school-backend.vercel.app/api/members`);
-        const res2 = await axios.get(`https://delhi-public-school-backend.vercel.app/api/people`);
-        setMembers([...res.data,...res2.data]);
+        const res = await axios.get(
+          `https://delhi-public-school-backend.vercel.app/api/members`
+        );
+        const res2 = await axios.get(
+          `https://delhi-public-school-backend.vercel.app/api/people`
+        );
+        setMembers([...res.data, ...res2.data]);
+
+        setToken(localStorage.getItem("authToken"));
       } catch (err) {
         console.error("Error fetching members", err);
       }
     };
 
     fetchMembers();
-  }, [mobile]);
+  }, [mobile, token]);
+
+  console.log("token2", token);
 
   const handleNavBtn = (id) => {
     if (id === "FILLDETAILS") navigate("/FillDetails");
@@ -30,7 +38,7 @@ const MemberDashboard = () => {
     else navigate("/");
   };
 
-  console.log(members)
+  console.log(members);
   return (
     <div className="min-h-screen bg-white flex flex-col items-center px-4 py-20">
       {/* Header */}
@@ -74,12 +82,14 @@ const MemberDashboard = () => {
             key={member._id}
             className="grid grid-cols-6 gap-1 items-center text-center px-4 py-2 border-b"
           >
-            <div className="font-medium">{String(idx + 1).padStart(2, "0")}</div>
-            <div>{member.name || member.firstName }</div>
+            <div className="font-medium">
+              {String(idx + 1).padStart(2, "0")}
+            </div>
+            <div>{member.name || member.firstName}</div>
             <div>{maskAadhar(member.aadhar || member.aadhaar)}</div>
             <div>{member.role || member.type}</div>
             <div>{member.gender}</div>
-            <div>{format(new Date(member.dob), "dd MMMM yyyy")}</div>
+            <div>{member?.dob}</div>
           </div>
         ))}
       </div>

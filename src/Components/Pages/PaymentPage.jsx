@@ -14,7 +14,7 @@ export default function RegisterPayment() {
    useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await axios.get(`https://delhi-public-school-backend.vercel.app/api/people`);
+        const res = await axios.get(`http://localhost:3000/api/people`);
         setPeople(res.data);
       } catch (err) {
         console.error("Error fetching members", err);
@@ -52,7 +52,7 @@ export default function RegisterPayment() {
   };
 
   try {
-    const res = await axios.post('https://delhi-public-school-backend.vercel.app/api/payment/create-order', payload);
+    const res = await axios.post('http://localhost:3000/api/payment/create-order', payload);
     const { orderId, key } = res.data;
 
     const options = {
@@ -65,7 +65,7 @@ export default function RegisterPayment() {
       order_id: orderId,
       handler: async function (response) {
         // Send response to backend to verify
-        await axios.post('https://delhi-public-school-backend.vercel.app/api/payment/verify', {
+        await axios.post('http://localhost:3000/api/payment/verify', {
           ...response,
           payer: selectedPerson,
           amount: grandTotal,

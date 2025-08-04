@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-const OTPLogin = () => {
+const OTPLogin = ({ onLogin }) => {
   const navigate = useNavigate();
   const [mobile, setMobile] = useState("");
   const [otp, setOtp] = useState("");
@@ -10,39 +10,42 @@ const OTPLogin = () => {
   const [timer, setTimer] = useState(0);
   const [resendAttempts, setResendAttempts] = useState(0);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
 
   useEffect(() => {
     let interval;
     if (timer > 0) {
       interval = setInterval(() => setTimer((prev) => prev - 1), 1000);
-    } else {
-      clearInterval(interval);
     }
     return () => clearInterval(interval);
   }, [timer]);
 
   const generateOtp = async () => {
-    if (mobile.length !== 10) {
-      setError("Enter valid 10-digit mobile number");
+    const isValidIndianMobile = (number) => /^[6-9]\d{9}$/.test(number);
+
+    if (!isValidIndianMobile(mobile)) {
+      setError("Enter a valid Indian mobile number");
       return;
     }
+
     setError("");
     try {
-      const res = await axios.post("https://delhi-public-school-backend.vercel.app/api/send-otp", {
+      const res = await axios.post("http://localhost:3000/api/send-otp", {
         mobile,
       });
+
       if (res.data.success) {
         setOtpSent(true);
         setTimer(45);
         setResendAttempts((prev) => prev + 1);
-        console.log("OTP sent successfully");
+        setSuccess("OTP sent successfully");
+
+        setTimeout(() => {
+          alert(`(Mocked) OTP is: ${res.data.otp}`);
+        }, 1000);
       } else {
         setError("Failed to send OTP");
       }
-      console.log(res.data)
-      setTimeout(() => {
-        alert(`OTP is: ${res.data.otp}`); 
-      }, 5000);
     } catch (err) {
       console.error(err);
       setError("Error sending OTP");
@@ -54,22 +57,45 @@ const OTPLogin = () => {
       setError("Enter valid 6-digit OTP");
       return;
     }
+
     setError("");
+    setSuccess("");
+
     try {
-      const res = await axios.post("https://delhi-public-school-backend.vercel.app/api/verify-otp", {
+      const res = await axios.post("http://localhost:3000/api/verify-otp", {
         mobile,
         otp,
       });
+
       if (res.data.success) {
-        navigate("/MemberDashboard");
+        localStorage.setItem("authToken", res.data.token);
+
+        if (onLogin) onLogin(res.data.token);
+
+        setSuccess("OTP Verified, Logging in...");
+        setTimeout(() => {
+          navigate("/MemberDashboard");
+        }, 1000);
       } else {
-        setError("Invalid OTP");
+        setError(res.data.message || "Invalid OTP");
       }
     } catch (err) {
       console.error(err);
-      setError("OTP validation failed");
+      if (err.response && err.response.status === 403) {
+        setError(
+          err.response.data.message || "Too many failed attempts. Try later."
+        );
+      } else {
+        setError("OTP validation failed");
+      }
     }
   };
+
+  useEffect(() => {
+    if (error.includes("Too many") || error.includes("blocked")) {
+      setOtpSent(false);
+    }
+  }, [error]);
 
   return (
     <div className="min-h-screen bg-white flex flex-col justify-center items-center px-4 py-10">
@@ -79,9 +105,12 @@ const OTPLogin = () => {
           alt="School Logo"
           className="h-40 mx-auto mb-4"
         />
-        <h1 className="font-bold underline mb-1 text-4xl">Delhi Public School</h1>
+        <h1 className="font-bold underline mb-1 text-4xl">
+          Delhi Public School
+        </h1>
         <p className="text-sm text-gray-700 leading-tight">
-          Nyati Estate Rd, Nyati County, Mohammed Wadi, Pune,<br />
+          Nyati Estate Rd, Nyati County, Mohammed Wadi, Pune,
+          <br />
           Autadwadi Handewadi, Maharashtra 411060
         </p>
       </div>
@@ -136,16 +165,22 @@ const OTPLogin = () => {
                   RESEND OTP
                 </button>
               ) : (
-                <span className="text-red-500">Max 3 attempts reached</span>
+                <span className="text-red-500">
+                  Max 3 resend attempts reached
+                </span>
               )}
             </div>
           </>
         )}
 
         {error && <p className="text-sm text-red-600">{error}</p>}
+        {success && <p className="text-sm text-green-600">{success}</p>}
 
         <div className="text-center">
-          <a href="/register" className="text-[#CA8A04] text-sm hover:underline">
+          <a
+            href="/register"
+            className="text-[#CA8A04] text-sm hover:underline"
+          >
             Not Registered? Register Now
           </a>
         </div>
