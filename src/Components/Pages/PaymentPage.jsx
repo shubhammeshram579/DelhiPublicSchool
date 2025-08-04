@@ -8,13 +8,14 @@ export default function RegisterPayment() {
   const navigate = useNavigate()
   const [people, setPeople] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(null);
+   const [tAmount, setTAmount] = useState(0);
 
-
+// console.log("people",people)
 
    useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await axios.get(`https://delhi-public-school-backend.vercel.app/api/people`);
+        const res = await axios.get(`http://localhost:3000/api/people`);
         setPeople(res.data);
       } catch (err) {
         console.error("Error fetching members", err);
@@ -36,9 +37,10 @@ export default function RegisterPayment() {
     setSelectedIndex(index);
   };
 
-  const totalAmount = 100.0;
-  const taxAmount = 18.0;
-  const grandTotal = totalAmount + taxAmount;
+  const totalAmount = tAmount;
+
+  const taxAmount = (Number(totalAmount) * 0.18); // 18% GST
+  const grandTotal = (Number(totalAmount) + Number(taxAmount));
 
   
 
@@ -52,7 +54,7 @@ export default function RegisterPayment() {
   };
 
   try {
-    const res = await axios.post('https://delhi-public-school-backend.vercel.app/api/payment/create-order', payload);
+    const res = await axios.post('http://localhost:3000/api/payment/create-order', payload);
     const { orderId, key } = res.data;
 
     const options = {
@@ -65,7 +67,7 @@ export default function RegisterPayment() {
       order_id: orderId,
       handler: async function (response) {
         // Send response to backend to verify
-        await axios.post('https://delhi-public-school-backend.vercel.app/api/payment/verify', {
+        await axios.post('http://localhost:3000/api/payment/verify', {
           ...response,
           payer: selectedPerson,
           amount: grandTotal,
@@ -169,25 +171,33 @@ export default function RegisterPayment() {
 
       <div className="grid grid-cols-3 gap-4 border border-yellow-800 p-4 w-[60%] mx-auto">
         <label className="text-right font-semibold">Total Amount (Rs.)</label>
-        <input
+        {/* <input
           className="border p-1 col-span-2"
           type="text"
           readOnly
           value={totalAmount.toFixed(2)}
-        />
+        /> */}
+        <input
+        className="border p-1 col-span-2"
+        type="number"
+        min="0"
+        value={totalAmount}
+        onChange={(e) => setTAmount(e.target.value)}
+        placeholder="Enter total amount"
+      />
         <label className="text-right font-semibold">Tax Amount (Rs.)</label>
         <input
           className="border p-1 col-span-2"
           type="text"
           readOnly
-          value={taxAmount.toFixed(2)}
+          value={taxAmount?.toFixed(2)}
         />
         <label className="text-right font-semibold">Grand Total Amount (Rs.)</label>
         <input
           className="border p-1 col-span-2"
           type="text"
           readOnly
-          value={grandTotal.toFixed(2)}
+          value={grandTotal?.toFixed(2)}
         />
       </div>
 

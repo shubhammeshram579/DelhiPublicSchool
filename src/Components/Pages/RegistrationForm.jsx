@@ -11,6 +11,7 @@ const OTPLogin = ({ onLogin }) => {
   const [resendAttempts, setResendAttempts] = useState(0);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [attemptsLeft, setAttemptsLeft] = useState(null);
 
   useEffect(() => {
     let interval;
@@ -31,7 +32,7 @@ const OTPLogin = ({ onLogin }) => {
     // http://localhost:3000/
     setError("");
     try {
-      const res = await axios.post("https://delhi-public-school-backend.vercel.app/api/send-otp", {
+      const res = await axios.post("http://localhost:3000/api/send-otp", {
         mobile,
       });
 
@@ -53,6 +54,7 @@ const OTPLogin = ({ onLogin }) => {
     }
   };
 
+
   const validateOtp = async () => {
     if (otp.length !== 6) {
       setError("Enter valid 6-digit OTP");
@@ -63,14 +65,13 @@ const OTPLogin = ({ onLogin }) => {
     setSuccess("");
 
     try {
-      const res = await axios.post("https://delhi-public-school-backend.vercel.app/api/verify-otp", {
+      const res = await axios.post("http://localhost:3000/api/verify-otp", {
         mobile,
         otp,
       });
 
       if (res.data.success) {
         localStorage.setItem("authToken", res.data.token);
-
         if (onLogin) onLogin(res.data.token);
 
         setSuccess("OTP Verified, Logging in...");
@@ -79,13 +80,18 @@ const OTPLogin = ({ onLogin }) => {
         }, 1000);
       } else {
         setError(res.data.message || "Invalid OTP");
+        if (res.data.attemptsLeft !== undefined) {
+          setAttemptsLeft(res.data.attemptsLeft);
+        }
       }
     } catch (err) {
       console.error(err);
-      if (err.response && err.response.status === 403) {
-        setError(
-          err.response.data.message || "Too many failed attempts. Try later."
-        );
+      if (err.response) {
+        const msg = err.response.data.message || "OTP validation failed";
+        setError(msg);
+        if (err.response.data.attemptsLeft !== undefined) {
+          setAttemptsLeft(err.response.data.attemptsLeft);
+        }
       } else {
         setError("OTP validation failed");
       }
@@ -148,6 +154,18 @@ const OTPLogin = ({ onLogin }) => {
               onChange={(e) => setOtp(e.target.value)}
               className="w-full border border-gray-300 px-3 py-2 rounded text-sm focus:outline-none"
             />
+
+            {attemptsLeft !== null && attemptsLeft > 0 && (
+              <p className="text-sm text-yellow-600">
+                You have {attemptsLeft} attempt{attemptsLeft === 1 ? "" : "s"}{" "}
+                left
+              </p>
+            )}
+            {attemptsLeft === 0 && (
+              <p className="text-sm text-red-600">
+                You have reached the maximum number of attempts.
+              </p>
+            )}
             <button
               onClick={validateOtp}
               className="w-full bg-green-600 text-white py-2 font-semibold rounded hover:bg-green-700"

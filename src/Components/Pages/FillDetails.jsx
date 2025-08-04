@@ -90,7 +90,7 @@ const FillDetails = () => {
     setErrors({});
     try {
       const response = await axios.post(
-        "https://delhi-public-school-backend.vercel.app/api/save-form",
+        "http://localhost:3000/api/save-form",
         formData
       );
       alert("Form submitted successfully!");

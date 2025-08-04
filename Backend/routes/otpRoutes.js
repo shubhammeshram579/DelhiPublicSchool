@@ -34,6 +34,7 @@ router.post("/verify-otp", async (req, res) => {
     return res.status(403).json({
       success: false,
       message: `Too many wrong attempts. Try again after ${attempt.blockedUntil.toLocaleTimeString()}`,
+      attemptsLeft: 0,
     });
   }
 
@@ -69,9 +70,14 @@ router.post("/verify-otp", async (req, res) => {
       await attempt.save();
     }
 
-    return res.status(400).json({ success: false, message: "Invalid or expired OTP" });
+    return res.status(400).json({
+      success: false,
+      message: "Invalid or expired OTP",
+      attemptsLeft: MAX_ATTEMPTS - (attempt ? attempt.attempts : 1),
+    });
   }
 });
+
 
 
 export default router;
