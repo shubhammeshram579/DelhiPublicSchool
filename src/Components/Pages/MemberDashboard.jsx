@@ -14,10 +14,10 @@ const MemberDashboard = () => {
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        const res = await axios.get(`http://localhost:3000/api/members`);
-        const res2 = await axios.get(`http://localhost:3000/api/people`);
+        const res = await axios.get(`https://delhi-public-school-backend.vercel.app/api/members`);
+        const res2 = await axios.get(`https://delhi-public-school-backend.vercel.app/api/people`);
         const paymentsRes = await axios.get(
-          `http://localhost:3000/api/payment/all`
+          `https://delhi-public-school-backend.vercel.app/api/payment/all`
         );
         setMembers([...res.data, ...res2.data]);
         setPayments(paymentsRes.data);
